@@ -15,6 +15,20 @@
 #define GAME_RATIO (GAME_WIDTH / GAME_HEIGHT)
 #define INV_GAME_RATIO (1 / GAME_RATIO)
 
+typedef struct{
+  Vector2 position;
+} Player;
+
+Player InitPlayer(int x, int y) {
+  Vector2 position= {x, y};
+  Player p = {position};
+  return p;
+}
+
+void DrawPlayer(Player *p) {
+  DrawRectangleV(p->position, (Vector2){10,10}, BLUE);
+}
+
 void resize(Rectangle *drec) {
   float nw = GetScreenWidth();
   float nh = GetScreenHeight();
@@ -44,6 +58,8 @@ int main() {
   Rectangle srec = {0, 0, GAME_WIDTH, -GAME_HEIGHT};
   Rectangle drec = {0, 0, width, height};
 
+  Player p = InitPlayer((GAME_WIDTH/2)-10,(GAME_HEIGHT/2)-10);
+
   SetWindowState(FLAG_WINDOW_RESIZABLE);
 
   while (!WindowShouldClose()) {
@@ -57,8 +73,8 @@ int main() {
 // Drawing
     BeginTextureMode(gameScreen);
     {
-      DrawRectangle(1, 1, GAME_WIDTH - 2, GAME_HEIGHT - 2, WHITE);
-      DrawTexture(backgroundTexture, 0, 0, WHITE);
+      ClearBackground(BLACK);
+      DrawPlayer(&p);
     }
     EndTextureMode();
 
