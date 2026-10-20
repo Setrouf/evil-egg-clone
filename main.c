@@ -15,17 +15,34 @@
 #define GAME_RATIO (GAME_WIDTH / GAME_HEIGHT)
 #define INV_GAME_RATIO (1 / GAME_RATIO)
 
+Vector2 Vec2Scale(Vector2 v, float l) {
+  v.x *= l;
+  v.y *= l;
+  return v;
+}
+Vector2 Vec2Add(Vector2 v1, Vector2 v2) {
+  v1.x += v2.x;
+  v1.y += v2.y;
+  return v1;
+}
+
 typedef struct {
   Vector2 position;
+  Vector2 shootingVec;
 } Player;
 
 Player InitPlayer(int x, int y) {
   Vector2 position = {x, y};
+  Vector2 shootingVec = {0,0};
   Player p = {position};
   return p;
 }
 
 void DrawPlayer(Player *p) {
+  Vector2 linestart = p->position;
+  linestart.x += 5;
+    linestart.y += 5;
+  DrawLineV(linestart, Vec2Add(linestart, Vec2Scale(p->shootingVec, 10)),  RED);
   DrawRectangleV(p->position, (Vector2){10, 10}, BLUE);
 }
 
@@ -76,6 +93,11 @@ int main() {
   if (IsKeyDown(KEY_A)) p.position.x -= P_SPEED*delta;
   if (IsKeyDown(KEY_S)) p.position.y += P_SPEED*delta;
   if (IsKeyDown(KEY_D)) p.position.x += P_SPEED*delta;
+  p.shootingVec = (Vector2){0, 0};
+  if (IsKeyDown(KEY_I)) p.shootingVec.y -= 1;
+  if (IsKeyDown(KEY_L)) p.shootingVec.x += 1;
+  if (IsKeyDown(KEY_K)) p.shootingVec.y += 1;
+  if (IsKeyDown(KEY_J)) p.shootingVec.x -= 1;
 
     // Drawing
     BeginTextureMode(gameScreen);
