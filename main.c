@@ -1,0 +1,79 @@
+#include <assert.h>
+#include <raylib.h>
+#include <stdbool.h>
+#include <stdio.h>
+// #include "reasings.h"
+
+#define P_SPEED 200.0f
+#define UP KEY_W
+#define DOWN KEY_S
+#define LEFT KEY_A
+#define RIGHT KEY_D
+
+#define GAME_WIDTH 240.0f
+#define GAME_HEIGHT 150.0f
+#define GAME_RATIO (GAME_WIDTH / GAME_HEIGHT)
+#define INV_GAME_RATIO (1 / GAME_RATIO)
+
+void resize(Rectangle *drec) {
+  float nw = GetScreenWidth();
+  float nh = GetScreenHeight();
+  if (nw/nh <= GAME_RATIO) {
+    drec->width = nw;
+    drec->height = INV_GAME_RATIO * nw;
+    drec->x = 0;
+    drec->y = (int)((nh - drec->height) / 2);
+  } else if (nw / nh > GAME_RATIO) {
+    drec->height = nh;
+    drec->width = GAME_RATIO * nh;
+    drec->y = 0;
+    drec->x = (int)((nw - drec->width) / 2) ;
+  }
+}
+
+int main() {
+
+// Initialization
+  InitWindow(GAME_WIDTH * 4, GAME_HEIGHT * 4, "Fighting");
+  RenderTexture2D gameScreen = LoadRenderTexture(GAME_WIDTH, GAME_HEIGHT);
+  Texture2D backgroundTexture = LoadTexture("./resources/BG.png");
+
+  int width = GetScreenWidth();
+  int height = GetScreenHeight();
+
+  Rectangle srec = {0, 0, GAME_WIDTH, -GAME_HEIGHT};
+  Rectangle drec = {0, 0, width, height};
+
+  SetWindowState(FLAG_WINDOW_RESIZABLE);
+
+  while (!WindowShouldClose()) {
+
+    if (IsWindowResized())
+      resize(&drec);
+
+    if (IsKeyPressed(KEY_F11))
+      ToggleFullscreen();
+
+// Drawing
+    BeginTextureMode(gameScreen);
+    {
+      DrawRectangle(1, 1, GAME_WIDTH - 2, GAME_HEIGHT - 2, WHITE);
+      DrawTexture(backgroundTexture, 0, 0, WHITE);
+    }
+    EndTextureMode();
+
+    BeginDrawing();
+    {
+      ClearBackground(BLACK);
+      DrawTexturePro(gameScreen.texture, srec, drec, (Vector2){0, 0}, 0, WHITE);
+      DrawText(TextFormat("W: %i\nH: %i", GetScreenWidth(), GetScreenHeight()),
+               0, 0, 24, DARKGREEN);
+      DrawText(
+          TextFormat("drec.x: %f\ndrec.y: %f\ndrec.width: %f\ndrec.height: %f",
+                     drec.x, drec.y, drec.width, drec.height),
+          0, 60, 24, DARKPURPLE);
+    }
+    EndDrawing();
+  }
+  CloseWindow();
+}
